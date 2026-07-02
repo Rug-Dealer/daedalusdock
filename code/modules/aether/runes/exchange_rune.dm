@@ -1,6 +1,5 @@
 /obj/effect/aether_rune/exchange
 	rune_type = "exchange"
-	invocation_name = "\improper Exchange"
 
 	invocation_phrases = list(
 		"Ar sha cholo shalotzata" = 3 SECONDS,
@@ -34,13 +33,12 @@
 			blackboard[RUNE_BB_EXCHANGE_PARTS] += I
 			continue
 
-/obj/effect/aether_rune/exchange/check_for_errors()
+/obj/effect/aether_rune/exchange/can_invoke()
 	. = ..()
-	if(.)
+	if(!.)
 		return
 
-	if(!length(blackboard[RUNE_BB_EXCHANGE_PARTS]))
-		return /datum/ritual_failure/exchange/no_parts
+	return length(blackboard[RUNE_BB_EXCHANGE_PARTS])
 
 /obj/effect/aether_rune/exchange/succeed_invoke(mob/living/carbon/human/target_mob)
 	var/list/parts = blackboard[RUNE_BB_EXCHANGE_PARTS]
@@ -61,9 +59,12 @@
 
 	return ..()
 
-/obj/effect/aether_rune/exchange/invoke_failure_effects(datum/ritual_failure/failure_reason, failure_source)
+/obj/effect/aether_rune/exchange/fail_invoke(failure_reason, failure_source)
+	if(failure_reason == RUNE_FAIL_GRACEFUL)
+		return ..()
+
 	switch(failure_reason)
-		if(/datum/ritual_failure/target_mob_moved, /datum/ritual_failure/target_mob_getup)
+		if(RUNE_FAIL_TARGET_MOB_MOVED, RUNE_FAIL_TARGET_STOOD_UP)
 			switch(rand(1,10))
 				if(1 to 6)
 					rip_out_target_heart()
@@ -72,13 +73,13 @@
 				if(9 to 10)
 					rip_out_organs(failure_source)
 
-		if(/datum/ritual_failure/helper_hand_removed)
+		if(RUNE_FAIL_HELPER_REMOVED_HAND)
 			if(prob(50))
 				dismember_mob(failure_source)
 			else
 				rip_out_organs(failure_source)
 
-		if(/datum/ritual_failure/invoker_incap)
+		if(RUNE_FAIL_INVOKER_INCAP)
 			if(length(touching_rune))
 				var/victim = pick(touching_rune)
 				if(prob(50))
@@ -89,6 +90,8 @@
 				rip_out_target_heart()
 		else
 			rip_out_target_heart()
+
+	return ..()
 
 /obj/effect/aether_rune/exchange/proc/rip_out_target_heart()
 	var/mob/living/carbon/human/victim = blackboard[RUNE_BB_TARGET_MOB]

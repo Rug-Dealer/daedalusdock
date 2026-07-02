@@ -29,7 +29,6 @@ type NtosCardContentData = {
   access_on_card: string[];
   authenticatedUser: string;
   has_id: BooleanLike;
-  have_auth_card: BooleanLike;
   have_id_slot: BooleanLike;
   id_rank: string;
   showBasic: BooleanLike;
@@ -153,19 +152,12 @@ type IDCardLoginData = {
   authIDName: string;
   authenticatedUser: string;
   has_id: BooleanLike;
-  have_auth_card: BooleanLike;
   have_printer: BooleanLike;
 };
 
 export const IDCardLogin = (props) => {
   const { act, data } = useBackend<IDCardLoginData>();
-  const {
-    authenticatedUser,
-    has_id,
-    have_printer,
-    have_auth_card,
-    authIDName,
-  } = data;
+  const { authenticatedUser, has_id, have_printer, authIDName } = data;
 
   return (
     <Section
@@ -179,7 +171,6 @@ export const IDCardLogin = (props) => {
             onClick={() => act('PRG_print')}
           />
           <Button
-            disabled={!authenticatedUser && !have_auth_card}
             icon={authenticatedUser ? 'sign-out-alt' : 'sign-in-alt'}
             content={authenticatedUser ? 'Log Out' : 'Log In'}
             color={authenticatedUser ? 'bad' : 'good'}

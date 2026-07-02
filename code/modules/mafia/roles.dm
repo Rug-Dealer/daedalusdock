@@ -76,7 +76,7 @@
 	. = ..()
 
 /datum/mafia_role/proc/greet()
-	SEND_SOUND(body, sound('sound/ambience/ambifailure.ogg', channel = SSsounds.random_available_channel()))
+	SEND_SOUND(body, 'sound/ambience/ambifailure.ogg')
 	to_chat(body,span_danger("You are the [name]."))
 	to_chat(body,span_danger("[desc]"))
 	switch(team)

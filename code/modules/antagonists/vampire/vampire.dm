@@ -147,7 +147,7 @@
 		if(O.organ_flags & ORGAN_SYNTHETIC)
 			continue
 
-		O.set_germ_level(INFECTION_LEVEL_THREE)
+		O.germ_level = INFECTION_LEVEL_THREE
 		O.set_organ_dead(TRUE)
 
 	thirst_level.remove_points(INFINITY)
@@ -163,7 +163,7 @@
 
 	var/mob/living/carbon/human/host = owner.current
 
-	SEND_SOUND(host, sound('sound/three_dsix/psyche.ogg', channel = SSsounds.random_available_channel()))
+	SEND_SOUND(host, sound('sound/three_dsix/psyche.ogg'))
 
 	var/list/potential_states = state_datums - current_states
 	for(var/datum/vampire_state/current as anything in current_states)

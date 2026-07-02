@@ -1,4 +1,4 @@
-import { Tooltip } from '../components';
+import { Tooltip } from 'tgui-core/components';
 
 import { useBackend } from '../backend';
 import {

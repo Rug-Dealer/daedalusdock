@@ -441,12 +441,17 @@
  * You should only pass integers in.
  */
 /proc/pick_weight(list/list_to_pick)
-	var/total = values_sum(list_to_pick)
+	var/total = 0
+	var/item
+	for(item in list_to_pick)
+		if(!list_to_pick[item])
+			list_to_pick[item] = 0
+		total += list_to_pick[item]
 
 	total = rand(1, total)
-	for(var/item, weight in list_to_pick)
-		total -= weight
-		if(total <= 0 && weight)
+	for(item in list_to_pick)
+		total -= list_to_pick[item]
+		if(total <= 0 && list_to_pick[item])
 			return item
 
 	return null

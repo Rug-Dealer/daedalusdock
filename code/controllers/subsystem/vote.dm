@@ -146,7 +146,7 @@ SUBSYSTEM_DEF(vote)
 		generated_actions += V
 
 		if(C.prefs.toggles & SOUND_ANNOUNCEMENTS)
-			SEND_SOUND(C, sound('sound/misc/bloop.ogg', channel = SSsounds.random_available_channel()))
+			SEND_SOUND(C, sound('sound/misc/bloop.ogg'))
 	return TRUE
 
 

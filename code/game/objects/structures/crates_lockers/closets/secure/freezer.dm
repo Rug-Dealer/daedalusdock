@@ -6,23 +6,23 @@
 	door_anim_time = 4
 	var/jones = FALSE
 
-/obj/structure/closet/secure_closet/freezer/deconstruct()
-	toggle_organ_freeze(src, FALSE)
+/obj/structure/closet/secure_closet/freezer/Destroy()
+	recursive_organ_check(src)
 	return ..()
 
 /obj/structure/closet/secure_closet/freezer/Initialize(mapload)
 	. = ..()
-	toggle_organ_freeze(src, TRUE)
+	recursive_organ_check(src)
 
 /obj/structure/closet/secure_closet/freezer/open(mob/living/user, force = FALSE)
 	if(opened || !can_open(user, force)) //dupe check just so we don't let the organs decay when someone fails to open the locker
 		return FALSE
-	toggle_organ_freeze(src, FALSE)
+	recursive_organ_check(src)
 	return ..()
 
 /obj/structure/closet/secure_closet/freezer/close(mob/living/user)
 	if(..()) //if we actually closed the locker
-		toggle_organ_freeze(src, TRUE)
+		recursive_organ_check(src)
 
 /obj/structure/closet/secure_closet/freezer/ex_act()
 	if(jones)
