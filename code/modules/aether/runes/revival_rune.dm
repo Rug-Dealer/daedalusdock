@@ -1,6 +1,5 @@
 /obj/effect/aether_rune/revival
 	rune_type = "revival"
-	invocation_name = "\improper Sunrise"
 
 	required_helpers = 3
 	required_blood_amt = 30
@@ -56,38 +55,35 @@
 		if(!reagent_container.is_open_container())
 			continue
 
-		if(reagent_container.reagents.has_reagent(/datum/reagent/tincture/woundseal))
-			register_item(reagent_container)
-			blackboard[RUNE_BB_REVIVAL_WOUNDSEAL_CONTAINER] = reagent_container
-			break
+		if(isnull(blackboard[RUNE_BB_REVIVAL_WOUNDSEAL_CONTAINER]))
+			var/datum/reagent/tincture/woundseal/woundseal = reagent_container.reagents.has_reagent(/datum/reagent/tincture/woundseal, required_woundseal_amt)
+			if(woundseal && woundseal.data?["potency"] >= required_woundseal_potency)
+				register_item(reagent_container)
+				blackboard[RUNE_BB_REVIVAL_WOUNDSEAL_CONTAINER] = reagent_container
+				continue
 
 	for(var/obj/item/organ/heart/heart in orange(1, src))
+		if(heart.organ_flags & (ORGAN_DEAD | ORGAN_SYNTHETIC))
+			continue
+
 		register_item(heart)
 		blackboard[RUNE_BB_REVIVAL_HEART] = heart
 		break
 
-/obj/effect/aether_rune/revival/check_for_errors()
+/obj/effect/aether_rune/revival/can_invoke()
 	. = ..()
-	if(.)
+	if(!.)
 		return
 
 	var/obj/item/organ/heart/heart = blackboard[RUNE_BB_REVIVAL_HEART]
 	if(!heart)
-		return /datum/ritual_failure/revival/no_heart
+		return FALSE
 
 	if(heart.organ_flags & ORGAN_DEAD)
-		return /datum/ritual_failure/revival/dead_heart
+		return FALSE
 
-	var/obj/item/reagent_containers/container = blackboard[RUNE_BB_REVIVAL_WOUNDSEAL_CONTAINER]
-	if(!container)
-		return /datum/ritual_failure/revival/woundseal_amount
-
-	var/datum/reagent/tincture/woundseal/woundseal = container.reagents.has_reagent(/datum/reagent/tincture/woundseal, required_woundseal_amt)
-	if(!woundseal)
-		return /datum/ritual_failure/revival/woundseal_amount
-
-	if(woundseal.data?["potency"] < required_woundseal_potency)
-		return /datum/ritual_failure/revival/woundseal_potency
+	if(!blackboard[RUNE_BB_REVIVAL_WOUNDSEAL_CONTAINER])
+		return FALSE
 
 /obj/effect/aether_rune/revival/succeed_invoke(mob/living/carbon/human/target_mob)
 	for(var/obj/item/organ/O in target_mob.processing_organs)
@@ -96,7 +92,7 @@
 
 		O.applyOrganDamage(-INFINITY)
 		O.set_organ_dead(FALSE)
-		O.set_germ_level(0)
+		O.germ_level = 0
 		if(istype(O, /obj/item/organ/brain))
 			var/obj/item/organ/brain/B = O
 			B.cure_all_traumas(TRAUMA_LIMIT_MAGIC)
@@ -136,15 +132,15 @@
 
 	var/mob/M = source
 	if(QDELETED(source))
-		try_cancel_invoke(/datum/ritual_failure/graceful)
+		try_cancel_invoke(RUNE_FAIL_GRACEFUL)
 		return
 
 	if(M.loc != loc)
-		try_cancel_invoke(/datum/ritual_failure/target_mob_moved, source)
+		try_cancel_invoke(RUNE_FAIL_TARGET_MOB_MOVED, source)
 
 /obj/effect/aether_rune/revival/proc/target_stat_change(datum/source)
 	SIGNAL_HANDLER
 
 	var/mob/living/L = source
 	if(L.stat != DEAD)
-		try_cancel_invoke(/datum/ritual_failure/revival/target_alive, L)
+		try_cancel_invoke(RUNE_FAIL_REVIVAL_TARGET_ALIVE, L)

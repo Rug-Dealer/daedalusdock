@@ -11,7 +11,6 @@ import { BoxProps, computeBoxClassName, computeBoxProps, unit } from './Box';
 export type FlexProps = BoxProps & {
   align?: string | BooleanLike;
   direction?: string | BooleanLike;
-  gap?: string | BooleanLike;
   inline?: BooleanLike;
   justify?: string | BooleanLike;
   scrollable?: BooleanLike;
@@ -27,8 +26,7 @@ export const computeFlexClassName = (props: FlexProps) => {
 };
 
 export const computeFlexProps = (props: FlexProps) => {
-  const { className, direction, gap, wrap, align, justify, inline, ...rest } =
-    props;
+  const { className, direction, wrap, align, justify, inline, ...rest } = props;
   return computeBoxProps({
     style: {
       ...rest.style,
@@ -36,7 +34,6 @@ export const computeFlexProps = (props: FlexProps) => {
       flexWrap: wrap === true ? 'wrap' : wrap,
       alignItems: align,
       justifyContent: justify,
-      gap: gap,
     },
     ...rest,
   });

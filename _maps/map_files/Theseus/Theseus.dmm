@@ -19194,14 +19194,7 @@
 	pixel_y = -8;
 	id = "engine_sides"
 	},
-/obj/item/tape/engine{
-	pixel_x = -5;
-	pixel_y = 10
-	},
-/obj/item/taperecorder/empty{
-	pixel_x = -6;
-	pixel_y = -2
-	},
+/obj/item/book/manual/codex/supermatter,
 /turf/open/floor/iron,
 /area/station/engineering/monitoring)
 "gNl" = (
@@ -20643,7 +20636,6 @@
 /obj/structure/cable/yellow{
 	icon_state = "12"
 	},
-/obj/item/book/manual/codex/supermatter,
 /turf/open/floor/iron,
 /area/station/engineering/monitoring)
 "hsV" = (
@@ -34651,6 +34643,7 @@
 /obj/machinery/modular_computer/console/preset/id{
 	dir = 4
 	},
+/obj/item/paper/fluff/ids_for_dummies,
 /turf/open/floor/wood,
 /area/station/command/heads_quarters/hop)
 "mpz" = (

@@ -3,7 +3,7 @@
  * @copyright 2021 Aleksej Komarov
  * @license MIT
  */
-import { Tooltip } from '../components';
+import { Tooltip } from 'tgui-core/components';
 
 import { Box, Button, Section } from '../components';
 

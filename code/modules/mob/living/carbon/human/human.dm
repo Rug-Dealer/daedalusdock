@@ -602,7 +602,7 @@
 	if(obscured & ITEM_SLOT_GLOVES)
 		return FALSE
 
-	set_germ_level(0)
+	germ_level = 0
 
 	if(gloves)
 		if(gloves.wash(clean_types))
@@ -814,7 +814,7 @@
 		BP.set_dislocated(FALSE)
 		BP.heal_bones()
 		BP.adjustPain(-INFINITY)
-		BP.set_germ_level(0)
+		BP.germ_level = 0
 
 	remove_all_embedded_objects()
 	set_heartattack(FALSE)

@@ -388,4 +388,9 @@ TYPEINFO_DEF(/obj/item/weldingtool/experimental)
 		nextrefueltick = world.time + 10
 		reagents.add_reagent(/datum/reagent/fuel, 1)
 
+/obj/item/weldingtool/experimental/disco_flavor(mob/living/carbon/human/user, nearby, is_station_level)
+	. = ..()
+	user.disco_made_easy("exp_welder", 13, skill_path = /datum/rpg_skill/fourteen_eyes, is_examine=TRUE, trait_succeed=TRAIT_ENGINEER, success_text = "Despite Daedalus Industries's numerous claims that it's \"less harmful to the eyes\", the arc generated is still painfully blinding.")
+
+
 #undef WELDER_FUEL_BURN_INTERVAL

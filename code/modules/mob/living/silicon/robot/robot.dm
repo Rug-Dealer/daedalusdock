@@ -65,7 +65,7 @@
 		if(!mmi?.brainmob)
 			mmi = new (src)
 			mmi.brain = new /obj/item/organ/brain(mmi)
-			ADD_TRAIT(mmi.brain, TRAIT_ORGAN_FROZEN, ref(mmi))
+			mmi.brain.organ_flags |= ORGAN_FROZEN
 			mmi.brain.name = "[real_name]'s brain"
 			mmi.name = "[initial(mmi.name)]: [real_name]"
 			mmi.set_brainmob(new /mob/living/brain(mmi))

@@ -19,7 +19,7 @@ Note that amputating the affected organ does in fact remove the infection from t
 */
 /obj/item/bodypart/proc/update_germs()
 	if(!IS_ORGANIC_LIMB(src)) //Robotic limbs shouldn't be infected, nor should nonexistant limbs.
-		set_germ_level(0)
+		germ_level = 0
 		return
 
 	if(owner.bodytemperature > TCRYO)	//cryo stops germs from moving and doing their bad stuffs
@@ -54,13 +54,14 @@ Note that amputating the affected organ does in fact remove the infection from t
 /// Handle antibiotics and curing infections
 /obj/item/bodypart/proc/handle_antibiotics()
 	if (germ_level < INFECTION_LEVEL_ONE)
-		set_germ_level(0)	//cure instantly
+		germ_level = 0	//cure instantly
 	else if (germ_level < INFECTION_LEVEL_TWO)
-		set_germ_level(germ_level - 5)	//at germ_level == 500, this should cure the infection in 5 minutes
+		germ_level -= 5	//at germ_level == 500, this should cure the infection in 5 minutes
 	else
-		set_germ_level(germ_level - 3) //at germ_level == 1000, this will cure the infection in 10 minutes
+		germ_level -= 3 //at germ_level == 1000, this will cure the infection in 10 minutes
 	if(owner.body_position == LYING_DOWN)
-		set_germ_level(germ_level - 2)
+		germ_level -= 2
+	germ_level = max(0, germ_level)
 
 /// Handle the effects of infections
 /obj/item/bodypart/proc/handle_germ_effects()
@@ -69,12 +70,12 @@ Note that amputating the affected organ does in fact remove the infection from t
 	if(germ_level < INFECTION_LEVEL_TWO)
 		if(isnull(owner) || owner.stat != DEAD)
 			if (germ_level > 0 && germ_level < INFECTION_LEVEL_ONE/2 && prob(0.3))
-				set_germ_level(germ_level -1)
+				germ_level--
 
 		if (germ_level >= INFECTION_LEVEL_ONE/2)
 			//aiming for germ level to go from ambient to INFECTION_LEVEL_TWO in an average of 15 minutes, when immunity is full.
 			if(antibiotics < 5 && prob(round(germ_level/6 * 0.01)))
-				set_germ_level(germ_level + 1)
+				germ_level += 1
 
 		if(germ_level >= INFECTION_LEVEL_ONE)
 			var/fever_temperature = (owner.dna.species.heat_level_1 - owner.dna.species.bodytemp_normal - 5)* min(germ_level/INFECTION_LEVEL_TWO, 1) + owner.dna.species.bodytemp_normal
@@ -112,13 +113,13 @@ Note that amputating the affected organ does in fact remove the infection from t
 					continue
 				if (child.germ_level < germ_level)
 					if (child.germ_level < INFECTION_LEVEL_ONE*2 || prob(30))
-						child.set_germ_level(child.germ_level + 1)
+						child.germ_level++
 		else
 
 			var/obj/item/bodypart/chest/parent = owner.get_bodypart(BODY_ZONE_CHEST)
 			if (parent.germ_level < germ_level && IS_ORGANIC_LIMB(parent))
 				if (parent.germ_level < INFECTION_LEVEL_ONE*2 || prob(30))
-					parent.set_germ_level(parent.germ_level + 1)
+					parent.germ_level++
 
 	if(germ_level >= INFECTION_LEVEL_THREE && antibiotics < 30)	//overdosing is necessary to stop severe infections
 		if (!(bodypart_flags & BP_NECROTIC))
@@ -126,6 +127,6 @@ Note that amputating the affected organ does in fact remove the infection from t
 			to_chat(owner, span_warning("You can't feel your [plaintext_zone] anymore..."))
 			update_disabled()
 
-		set_germ_level(germ_level + 1)
+		germ_level++
 		if(owner.adjustToxLoss(1, FALSE, cause_of_death = "Necrosis"))
 			return BODYPART_LIFE_UPDATE_HEALTH

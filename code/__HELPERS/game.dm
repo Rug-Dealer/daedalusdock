@@ -17,32 +17,37 @@
 /proc/cheap_hypotenuse(Ax, Ay, Bx, By)
 	return sqrt(abs(Ax - Bx) ** 2 + abs(Ay - By) ** 2) //A squared + B squared = C squared
 
-/// Freezes or unfreezes organs inside of the containing object or within the contents of contained atoms. Only checks 1 layer deeper than containing_object.contents.
-/proc/toggle_organ_freeze(atom/containing_object, freeze = TRUE)
-	var/list/processing_list = list(containing_object)
+/** recursive_organ_check
+ * inputs: first_object (object to start with)
+ * outputs:
+ * description: A pseudo-recursive loop based off of the recursive mob check, this check looks for any organs held
+ *  within 'first_object', toggling their frozen flag. This check excludes items held within other safe organ
+ *  storage units, so that only the lowest level of container dictates whether we do or don't decompose
+ */
+/proc/recursive_organ_check(atom/first_object)
+
+	var/list/processing_list = list(first_object)
 	var/list/processed_list = list()
 	var/index = 1
+	var/obj/item/organ/found_organ
 
 	while(index <= length(processing_list))
+
 		var/atom/object_to_check = processing_list[index]
 
 		if(istype(object_to_check, /obj/item/organ))
-			if(freeze)
-				ADD_TRAIT(object_to_check, TRAIT_ORGAN_FROZEN, ref(containing_object))
-			else
-				REMOVE_TRAIT(object_to_check, TRAIT_ORGAN_FROZEN, ref(containing_object))
+			found_organ = object_to_check
+			found_organ.organ_flags ^= ORGAN_FROZEN
 
 		else if(istype(object_to_check, /mob/living/carbon))
 			var/mob/living/carbon/mob_to_check = object_to_check
-			for(var/obj/item/organ/organ in mob_to_check.processing_organs)
-				if(freeze)
-					ADD_TRAIT(organ, TRAIT_ORGAN_FROZEN, ref(containing_object))
-				else
-					REMOVE_TRAIT(organ, TRAIT_ORGAN_FROZEN, ref(containing_object))
+			for(var/organ in mob_to_check.processing_organs)
+				found_organ = organ
+				found_organ.organ_flags ^= ORGAN_FROZEN
 
-		for(var/atom/contained_to_check in object_to_check) //objects held within other objects are added to the processing list
-			if(!processed_list[contained_to_check])
-				processing_list += contained_to_check
+		for(var/atom/contained_to_check in object_to_check) //objects held within other objects are added to the processing list, unless that object is something that can hold organs safely
+			if(!processed_list[contained_to_check] && !istype(contained_to_check, /obj/structure/closet/crate/freezer) && !istype(contained_to_check, /obj/structure/closet/secure_closet/freezer))
+				processing_list+= contained_to_check
 
 		index++
 		processed_list[object_to_check] = object_to_check
@@ -186,8 +191,7 @@
 /proc/show_candidate_poll_window(mob/candidate_mob, poll_time, question, list/candidates, ignore_category, time_passed, flashwindow = TRUE)
 	set waitfor = 0
 
-	var/sound/S = sound('sound/misc/notice2.ogg', channel = SSsounds.random_available_channel())
-	SEND_SOUND(candidate_mob, S) //Alerting them to their consideration
+	SEND_SOUND(candidate_mob, 'sound/misc/notice2.ogg') //Alerting them to their consideration
 	if(flashwindow)
 		window_flash(candidate_mob.client)
 	var/list/answers = ignore_category ? list("Yes", "No", "Never for this round") : list("Yes", "No")
@@ -196,7 +200,7 @@
 			to_chat(candidate_mob, span_notice("Choice registered: Yes."))
 			if(time_passed + poll_time <= world.time)
 				to_chat(candidate_mob, span_danger("Sorry, you answered too late to be considered!"))
-				SEND_SOUND(candidate_mob, sound('sound/machines/buzz-sigh.ogg', channel = SSsounds.random_available_channel()))
+				SEND_SOUND(candidate_mob, 'sound/machines/buzz-sigh.ogg')
 				candidates -= candidate_mob
 			else
 				candidates += candidate_mob

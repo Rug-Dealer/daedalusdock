@@ -92,7 +92,7 @@ export const SelectEquipment = (props) => {
                     src={`data:image/jpeg;base64,${icon64}`}
                     height="100%"
                     style={{
-                      'image-rendering': 'pixelated',
+                      '-ms-interpolation-mode': 'nearest-neighbor',
                     }}
                   />
                 </Section>

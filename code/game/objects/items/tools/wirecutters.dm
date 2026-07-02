@@ -65,6 +65,10 @@ TYPEINFO_DEF(/obj/item/wirecutters)
 	playsound(loc, usesound, 50, TRUE, -1)
 	return (BRUTELOSS)
 
+/obj/item/wirecutters/disco_flavor(mob/living/carbon/human/user, nearby=TRUE, is_station_level)
+	. = ..()
+	user.disco_made_easy("wirecutters", 9, skill_path = /datum/rpg_skill/fourteen_eyes, is_examine=TRUE, trait_succeed=TRAIT_ENGINEER, success_text = "What appears to be a rubber handle is actually just totally uninsulated plastic.")
+
 TYPEINFO_DEF(/obj/item/wirecutters/abductor)
 	default_materials = list(/datum/material/iron = 5000, /datum/material/silver = 2500, /datum/material/plasma = 1000, /datum/material/titanium = 2000, /datum/material/diamond = 2000)
 
